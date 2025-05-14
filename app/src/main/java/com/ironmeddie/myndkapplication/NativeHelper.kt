@@ -11,4 +11,5 @@ object NativeHelper {
     external fun startCrash() // Нативный метод для вызова краша
     external fun circleCrash() // Нативный метод для вызова краша
     external fun tgkillCrash() // Нативный метод для вызова краша
+    external fun thread() // Нативный метод для вызова краша
 }

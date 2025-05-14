@@ -10,10 +10,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ironmeddie.varioqub.ui.theme.NdkTheme
 import io.appmetrica.analytics.AppMetrica
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : androidx.activity.ComponentActivity() {
@@ -34,21 +38,25 @@ class MainActivity : androidx.activity.ComponentActivity() {
 
 @Composable
 fun Greeting(modifier: Modifier = Modifier) {
+    val scope = rememberCoroutineScope()
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Button(onClick = {
-            NativeHelper.crashAppAbrt()
+            scope.launch {
+                withContext(Dispatchers.Default) {
+                    NativeHelper.crashAppAbrt()
+                }
+            }
         }) {
             Text("abrt crash")
         }
         Button(onClick = {
-            NativeHelper.crashAppSegv()
+            scope.launch {
+                withContext(Dispatchers.Default) {
+                    NativeHelper.crashAppSegv()
+                }
+            }
         }) {
             Text("segv crash")
-        }
-        Button(onClick = {
-            NativeHelper.stringFromJNI()
-        }) {
-            Text("stringFromJNI")
         }
         Button(onClick = {
             NativeHelper.startCrash()
@@ -64,6 +72,15 @@ fun Greeting(modifier: Modifier = Modifier) {
             NativeHelper.tgkillCrash()
         }) {
             Text("NDK crash tgkill")
+        }
+        Button(onClick = {
+            scope.launch {
+                withContext(Dispatchers.IO) {
+                    NativeHelper.thread()
+                }
+            }
+        }) {
+            Text("thread()")
         }
         Button(onClick = {
             AppMetrica.sendEventsBuffer()

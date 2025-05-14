@@ -8,6 +8,7 @@
 #include <android/log.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include <thread>
 
 void* killer_thread(void*) {
     sleep(1); // Даем основному потоку время на запуск
@@ -20,6 +21,11 @@ void crash() {
     volatile int* ptr = nullptr;
     *ptr = 42; // Краш из-за SIGSEGV
 }
+
+void backgroundThreadLogic() {
+    std::abort();
+}
+
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_ironmeddie_myndkapplication_NativeHelper_stringFromJNI(
@@ -47,6 +53,7 @@ Java_com_ironmeddie_myndkapplication_NativeHelper_startCrash(JNIEnv*, jobject) {
     while (true) {} // Бесконечный цикл (чтобы поток не завершился раньше краша)
 }
 
+
 extern "C" JNIEXPORT void JNICALL
 Java_com_ironmeddie_myndkapplication_NativeHelper_circleCrash(JNIEnv*, jobject) {
     volatile int buf[1];
@@ -55,7 +62,15 @@ Java_com_ironmeddie_myndkapplication_NativeHelper_circleCrash(JNIEnv*, jobject) 
     }
 }
 
+
 extern "C" JNIEXPORT void JNICALL
 Java_com_ironmeddie_myndkapplication_NativeHelper_tgkillCrash(JNIEnv*, jobject) {
     syscall(__NR_tgkill, getpid(), gettid(), SIGABRT);
 }
+
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_ironmeddie_myndkapplication_NativeHelper_thread(JNIEnv* env, jobject thiz) {
+    std::thread(backgroundThreadLogic).detach();
+}
+
