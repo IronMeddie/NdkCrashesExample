@@ -7,9 +7,7 @@ import io.appmetrica.analytics.AppMetricaConfig
 class NdkApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        val config = System.getenv("API_KEY")?.let { AppMetricaConfig.newConfigBuilder(it).build() }
-        if (config != null) {
-            AppMetrica.activate(this, config)
-        }
+        val config = AppMetricaConfig.newConfigBuilder(Secret.API_KEY).build()
+        AppMetrica.activate(this, config)
     }
 }
